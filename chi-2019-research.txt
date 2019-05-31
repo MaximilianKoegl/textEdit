@@ -1,1 +1,37 @@
+# Workload Distribution
+# Jonas Puchinger:
+# - Selection of three papers from CHI 19
+# - Summaries of these three papers in this file
 
+Summary of Paper [1]:
+The authors of this paper explore possibilities to improve typing on split keyboards, which are commonly used on touchscreen devices with larger displays, like tablets, because they allow for easier typing, but also increase fatigue and attention splitting.
+The theoretical background for this study is the fact, that humans are able to recognize visual feedback in the field of their peripheral vision, meaning a part of the visible spectrum that is not directly focused.
+In the first part of the study, the researchers show, that keeping the split keyboard in the peripheral vision and placing the visual focus on the actual input text field improves typing speed and user experience at the price of a bit of accuracy when compared to text entry with visual focus on the keyboard.
+In the second part of the study, a novel input technique called GlanceType is designed and evaluated, which uses two different placements for candidate-lists, and therefore enables users to type in their preferred setting while reducing the number of times the user has to sift his attention focus.
+Overall, the study shows, that utilizing peripheral vision for text entry is benefitial, because it increases input speed and user experience. 
+
+Summary of Paper [2]:
+In this study, the authors show how tactile data measured by a pressure-sensitive input device can be translated into textual form expressing the affective meaning of the given touch.
+Tactile input in different forms like stroking or shaking is measured using a fidget ball, and then translated into a feature vector of affective data.
+This data then gets matched accordingly to song lyrics expressing the same affection as the touch, using a pre-trained machine learning algorithm.
+While the approach of this study is somewhat limited by the amount of input gestures, number of recognizable affect features, and the number of textual expressions to be translated, it nonetheless shows that tactile input can be used for effective entry of text.
+
+Summary of Paper [3]:
+The authors of this study argue, that typing on standard keyboards while experiencing alternate realities in AR, VR or comparable simulations is lackluster and oftentimes inappropriate.
+They propose a new input device, the keycube, which is a tangible cubic interface designed for text entry, using the 80 keys playced on the sides of the cube.
+Further than that, other forms are input and interaction are enabled by a touchscreen, a inertial unit to recognize spatial input, and a motor used for haptic feedback like vibrations.
+This design allows users to generate input for a connected computer like a traditional keyboard, but goes far beyond that concept by also allowing more input and interaction methods and a way higher mobility factor.
+The keycube is therefore ideal for the use with AR- and VR-headsets, but can also just be used instead of a traditional keyboard to increase the user experience by allowing the use in different comfortable body poses.
+
+[1] Yiqin Lu, Chun Yu, Shuyi Fan, Xiaojun Bi, and Yuanchun Shi. 2019. 
+Typing on Split Keyboards with Peripheral Vision. 
+In Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems (CHI '19). ACM, New York, NY, USA, Paper 200, 12 pages. 
+DOI: https://doi.org/10.1145/3290605.3300430
+
+[2] Daniel Shapiro, Zeping Zhan, Peter Cottrell, and Katherine Isbister. 2019. 
+Translating Affective Touch into Text. In Extended Abstracts of the 2019 CHI Conference on Human Factors in Computing Systems (CHI EA '19). ACM, New York, NY, USA, Paper LBW0175, 6 pages. 
+DOI: https://doi.org/10.1145/3290607.3313015
+
+[3] Damien Brun, Charles Gouin-Vallerand, and Sébastien George. 2019. 
+Keycube is a Kind of Keyboard (k3). In Extended Abstracts of the 2019 CHI Conference on Human Factors in Computing Systems (CHI EA '19). ACM, New York, NY, USA, Paper INT034, 4 pages. 
+DOI: https://doi.org/10.1145/3290607.3313258
