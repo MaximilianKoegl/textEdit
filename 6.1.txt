@@ -1,0 +1,17 @@
+a)
+MacKenzie and Soukoreff give in the paper „Text Entry for Mobile Computing: Models and Methods, Theory and Practice“ an extended overview about text entry for mobile and handheld devices, including opinions and observations about evaluations and further focus on optimization of text entry. They also present the current state of the art in a survey. They exclude speech recognition and focus mainly on English based text entry.
+
+For mobile text-input are pen-based and keyboard-based the main paradigms. Pen-based input like handwriting produces „digital ink“ if there is no character recognition. The text input rate is also slower on pen-based input. Furthermore, Users are expecting the same input rates with mobile devices. 
+For evaluating text entry methods there are two tasks to distinguish: text copy and text creation. Text copy task has an additional focus of attention, but are preferred in evaluation. They are preferred because users in text creation tasks may have unnecessary behaviors, the researcher can not identify errors that easily and has furthermore no control about the distribution of letters and words. The best method is to use both of them. 
+The novice experience and thus immediate usability is important. There are pros and cons to measuring novices and expert users.
+Speed of text input measured with characters per second or word per minute where 5 characters specify a word. For the accuracy, the error characters are reported as the percentage above all characters. Four types of errors (incorrect, omitting a, adding an extra, swapping neighboring characters). A trade-off between speed and accuracy has to be done. Other factors like one or two hands, in which body position the device is operated and more which should be focused, if necessary.
+Optimization can be done with movement minimization or language prediction. 
+A statistical language model was combined with a movement time prediction model to assist in modeling and designing input techniques with a focus on efficient hand or device movement. Fitts law for predicting movement time and Hick-Hymann law to predict reaction time.
+Language prediction uses a corpus. This corpus may not be representative for the different end users, does not cover the process of editing and does not capture different input modalities. 
+Followed by a survey about text entry techniques.
+
+Read MacKenzie, I. S., & Soukoreff, R. W. (2002). Text entry for mobile computing: Models and methods, theory and
+practice. Human-Computer Interaction, 17, 147-198
+
+b)
+
