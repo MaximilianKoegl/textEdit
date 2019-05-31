@@ -10,7 +10,7 @@ A statistical language model was combined with a movement time prediction model 
 Language prediction uses a corpus. This corpus may not be representative for the different end users, does not cover the process of editing and does not capture different input modalities. 
 Followed by a survey about text entry techniques.
 
-Read MacKenzie, I. S., & Soukoreff, R. W. (2002). Text entry for mobile computing: Models and methods, theory and
+MacKenzie, I. S., & Soukoreff, R. W. (2002). Text entry for mobile computing: Models and methods, theory and
 practice. Human-Computer Interaction, 17, 147-198
 
 b)
