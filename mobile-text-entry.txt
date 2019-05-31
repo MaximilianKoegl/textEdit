@@ -1,4 +1,3 @@
-a)
 MacKenzie and Soukoreff give in the paper „Text Entry for Mobile Computing: Models and Methods, Theory and Practice“ an extended overview about text entry for mobile and handheld devices, including opinions and observations about evaluations and further focus on optimization of text entry. They also present the current state of the art in a survey. They exclude speech recognition and focus mainly on English based text entry.
 
 For mobile text-input are pen-based and keyboard-based the main paradigms. Pen-based input like handwriting produces „digital ink“ if there is no character recognition. The text input rate is also slower on pen-based input. Furthermore, Users are expecting the same input rates with mobile devices. 
