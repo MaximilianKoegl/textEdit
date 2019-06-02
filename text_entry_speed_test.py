@@ -30,14 +30,10 @@ class SuperText(QtWidgets.QTextEdit):
         self.show()
 
     def changedText(self):
-        if not self.is_running_word:
-            self.is_running_word = True
-            self.start_measurement(self.word_timer)
-
-        if not self.is_running_sentence:
-            self.is_running_sentence = True
-            self.start_measurement(self.sentence_timer)
-        
+        self.handleTimer()
+        self.handleText()
+    
+    def handleText(self):
         last_char = self.toPlainText()[-1:]
         print("Key Pressed: " + repr(last_char))
 
@@ -45,11 +41,21 @@ class SuperText(QtWidgets.QTextEdit):
             print("Wordtime: ")
             print(self.stop_measurement(self.word_timer))
             self.is_running_word = False
+
         elif last_char == "\n":
             print("Sentencetime: ")
             print(self.stop_measurement(self.sentence_timer))
             self.is_running_sentence = False
         
+    def handleTimer(self):
+        if not self.is_running_word:
+            self.is_running_word = True
+            self.start_measurement(self.word_timer)
+
+        if not self.is_running_sentence:
+            self.is_running_sentence = True
+            self.start_measurement(self.sentence_timer)
+
     def start_measurement(self, timer):
         timer.start()
 
