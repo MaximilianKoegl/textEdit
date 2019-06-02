@@ -14,10 +14,14 @@ class SuperText(QtWidgets.QTextEdit):
         self.sentence_timer = QtCore.QTime()
         self.is_running_word = False
         self.is_running_sentence = False
-        self.template_doc = ""
-        self.setHtml(example_text)
+        self.sentence = ""
+        self.current_word = ""
         self.prev_content = ""
         self.textChanged.connect(self.changedText)
+
+        self.template_doc = ""
+        self.setHtml(example_text)
+
         self.generate_template()
         self.render_template()
         self.initUI()
@@ -31,21 +35,37 @@ class SuperText(QtWidgets.QTextEdit):
 
     def changedText(self):
         self.handleTimer()
-        self.handleText()
+        # Delete last char and prevent measurement from errors 
+        if not len(self.prev_content) > len(self.toPlainText()):
+            self.handleText()
+        self.prev_content = self.toPlainText()
     
     def handleText(self):
         last_char = self.toPlainText()[-1:]
         print("Key Pressed: " + repr(last_char))
 
+        # Stop word measuring and add word to sentence
         if last_char == " ":
             print("Wordtime: ")
             print(self.stop_measurement(self.word_timer))
             self.is_running_word = False
+            self.sentence += self.current_word+" "
+            print(self.current_word)
+            self.current_word = ""
 
+        # Stop sentence measuring and empty sentence and word
         elif last_char == "\n":
             print("Sentencetime: ")
             print(self.stop_measurement(self.sentence_timer))
             self.is_running_sentence = False
+            self.sentence += self.current_word
+            print(self.sentence)
+            self.sentence = ""
+            self.current_word = ""
+        
+        # Add latest character to word
+        else:
+            self.current_word += last_char
         
     def handleTimer(self):
         if not self.is_running_word:
