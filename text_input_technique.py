@@ -8,10 +8,29 @@ import csv
 import io
 # from table_logger import TableLogger
 
+# TODO: inconsistencies with loggin when completing with suggestion: two separate logs when completion occurs and when space is pressed
+
+# https://doc.qt.io/qtforpython/PySide2/QtWidgets/QCompleter.html?highlight=qcompleter
+# https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
+class TextInputTechnique(QtWidgets.QCompleter):
+    insertText = QtCore.pyqtSignal(str)
+
+    def __init__(self, wordlist, parent=None):
+        QtWidgets.QCompleter.__init__(self, wordlist, parent)
+        self.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+        self.highlighted.connect(self.setHighlighted)
+
+    def setHighlighted(self, text):
+        self.lastSelected = text
+
+    def getSelected(self):
+        return self.lastSelected
+
 class SuperText(QtWidgets.QTextEdit):
  
-    def __init__(self):
-        super(SuperText, self).__init__()
+    def __init__(self, parent=None):
+        super(SuperText, self).__init__(parent)
 
         # method to print logs to console in a nice formatted tabular way. easier to read, but not valid csv. disabled by default
         # self.tbl = TableLogger(columns="timestamp,event,input,time")
@@ -24,6 +43,13 @@ class SuperText(QtWidgets.QTextEdit):
         self.current_word = ""
         self.prev_content = ""
 
+        self.wordlist = ["ball", "happy", "boat", "sweet", "halleluja", "funny", "football"]
+
+        # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
+        self.completer = TextInputTechnique(self.wordlist)
+        self.completer.setWidget(self)
+        self.completer.insertText.connect(self.insertCompletion)
+
         self.textChanged.connect(self.changedText)
 
         self.initUI()
@@ -34,6 +60,48 @@ class SuperText(QtWidgets.QTextEdit):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setMouseTracking(True)
         self.show()
+
+    # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
+    def insertCompletion(self, completion):
+        tc = self.textCursor()
+        extra = (len(completion) - len(self.completer.completionPrefix()))
+        tc.movePosition(QtGui.QTextCursor.Left)
+        tc.movePosition(QtGui.QTextCursor.EndOfWord)
+        tc.insertText(completion[-extra:])
+        self.current_word = self.current_word[:-1] + completion[-extra:]
+        self.setTextCursor(tc)
+        self.completer.popup().hide()
+        self.log_csv([self.timestamp(), "word completed", self.current_word, self.stop_measurement(self.word_timer)])
+
+    # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        QtWidgets.QTextEdit.focusInEvent(self, event)
+
+    # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
+    def keyPressEvent(self, event):
+        tc = self.textCursor()
+        if event.key() == QtCore.Qt.Key_Tab and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+            return
+
+        QtWidgets.QTextEdit.keyPressEvent(self, event)
+        tc.select(QtGui.QTextCursor.WordUnderCursor)
+        cr = self.cursorRect()
+
+        if len(tc.selectedText()) > 0:
+            self.completer.setCompletionPrefix(tc.selectedText())
+            popup = self.completer.popup()
+            popup.setCurrentIndex(self.completer.completionModel().index(0,0))
+
+            cr.setWidth(self.completer.popup().sizeHintForColumn(0) 
+            + self.completer.popup().verticalScrollBar().sizeHint().width())
+            self.completer.complete(cr)
+
+        else:
+            self.completer.popup().hide()
 
     def changedText(self):
         self.handleTimer()
@@ -68,11 +136,10 @@ class SuperText(QtWidgets.QTextEdit):
         # Add latest character to word
         else:
             self.current_word += last_char
-            
+
             # self.tbl(self.timestamp(), "character typed", last_char, 0)
 
             self.log_csv([self.timestamp(), "character typed", last_char, 0])
-        
 
     def handleTimer(self):
         if not self.is_running_word:
