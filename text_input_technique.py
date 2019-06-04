@@ -27,13 +27,11 @@ class TextInputTechnique(QtWidgets.QCompleter):
     def getSelected(self):
         return self.lastSelected
 
+
 class SuperText(QtWidgets.QTextEdit):
  
     def __init__(self, parent=None):
         super(SuperText, self).__init__(parent)
-
-        # method to print logs to console in a nice formatted tabular way. easier to read, but not valid csv. disabled by default
-        # self.tbl = TableLogger(columns="timestamp,event,input,time")
 
         self.word_timer = QtCore.QTime()
         self.sentence_timer = QtCore.QTime()
@@ -49,9 +47,6 @@ class SuperText(QtWidgets.QTextEdit):
         self.completer = TextInputTechnique(self.wordlist)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
-
-        self.textChanged.connect(self.changedText)
-
         self.initUI()
         
     def initUI(self):      
@@ -68,10 +63,10 @@ class SuperText(QtWidgets.QTextEdit):
         tc.movePosition(QtGui.QTextCursor.Left)
         tc.movePosition(QtGui.QTextCursor.EndOfWord)
         tc.insertText(completion[-extra:])
-        self.current_word = self.current_word[:-1] + completion[-extra:]
+        self.current_word = self.current_word + completion[-extra:]
         self.setTextCursor(tc)
         self.completer.popup().hide()
-        self.log_csv([self.timestamp(), "word completed", self.current_word, self.stop_measurement(self.word_timer)])
+        self.finishedWord(1)
 
     # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
     def focusInEvent(self, event):
@@ -102,50 +97,47 @@ class SuperText(QtWidgets.QTextEdit):
 
         else:
             self.completer.popup().hide()
-
-    def changedText(self):
+        
+        if not event.key() == QtCore.Qt.Key_Tab:
+            self.handle_text()
+        
+    def handle_text(self):
         self.handleTimer()
-        # Delete last char and prevent measurement from errors
-        if not len(self.prev_content) > len(self.toPlainText()):
-            self.handleText()
-        self.prev_content = self.toPlainText()
-
-    def handleText(self):
         last_char = self.toPlainText()[-1:]
+        self.log_csv([self.timestamp(), "character typed", last_char, 0])
 
         # Stop word measuring and add word to sentence
         if last_char == " ":
-            self.pressedSpacebar()
+            self.finishedWord(0)
         elif last_char == "\n":
             self.pressedEnter()
         # Add latest character to word
         else:
             self.current_word += last_char
 
-            # self.tbl(self.timestamp(), "character typed", last_char, 0)
-
-            self.log_csv([self.timestamp(), "character typed", last_char, 0])
-
-    def pressedSpacebar(self):
+    def finishedWord(self, num):
         self.is_running_word = False
-        self.sentence += self.current_word + " "
+        self.sentence += self.current_word
+        if num:
+            text = "completed"
+        else:
+            text = "typed"
+            self.sentence += " "
 
-        # self.tbl(self.timestamp(), "word typed", self.current_word, self.stop_measurement(self.word_timer))
         if re.search('[a-zA-Z]', self.current_word):
             self.log_csv([
                         self.timestamp(),
-                        "word typed",
+                        str("word "+text),
                         self.current_word,
                         self.stop_measurement(self.word_timer)
                         ])
-        self.current_word = ""
+            self.current_word = ""
     
     def pressedEnter(self):
         self.is_running_sentence = False
         self.is_running_word = False
         self.sentence += self.current_word
 
-        # self.tbl(self.timestamp(), "sentence typed", self.sentence, self.stop_measurement(self.sentence_timer))
         if self.current_word != "":
             self.log_csv([
                             self.timestamp(),
@@ -188,6 +180,7 @@ class SuperText(QtWidgets.QTextEdit):
         cw = csv.writer(si)
         cw.writerow(data)
         print(si.getvalue().strip("\r\n"))
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
