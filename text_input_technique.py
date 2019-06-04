@@ -105,34 +105,19 @@ class SuperText(QtWidgets.QTextEdit):
 
     def changedText(self):
         self.handleTimer()
-        # Delete last char and prevent measurement from errors 
+        # Delete last char and prevent measurement from errors
         if not len(self.prev_content) > len(self.toPlainText()):
             self.handleText()
         self.prev_content = self.toPlainText()
-    
+
     def handleText(self):
         last_char = self.toPlainText()[-1:]
 
         # Stop word measuring and add word to sentence
         if last_char == " ":
-            self.is_running_word = False
-            self.sentence += self.current_word + " "
-
-            # self.tbl(self.timestamp(), "word typed", self.current_word, self.stop_measurement(self.word_timer))
-
-            self.log_csv([self.timestamp(), "word typed", self.current_word, self.stop_measurement(self.word_timer)])
-            self.current_word = ""
-
+            self.pressedSpacebar()
         elif last_char == "\n":
-            self.is_running_sentence = False
-            self.sentence += self.current_word
-
-            # self.tbl(self.timestamp(), "sentence typed", self.sentence, self.stop_measurement(self.sentence_timer))
-
-            self.log_csv([self.timestamp(), "sentence typed", self.sentence, self.stop_measurement(self.sentence_timer)])
-            self.sentence = ""
-            self.current_word = ""
-        
+            self.pressedEnter()
         # Add latest character to word
         else:
             self.current_word += last_char
@@ -140,6 +125,43 @@ class SuperText(QtWidgets.QTextEdit):
             # self.tbl(self.timestamp(), "character typed", last_char, 0)
 
             self.log_csv([self.timestamp(), "character typed", last_char, 0])
+
+    def pressedSpacebar(self):
+        self.is_running_word = False
+        self.sentence += self.current_word + " "
+
+        # self.tbl(self.timestamp(), "word typed", self.current_word, self.stop_measurement(self.word_timer))
+        if re.search('[a-zA-Z]', self.current_word):
+            self.log_csv([
+                        self.timestamp(),
+                        "word typed",
+                        self.current_word,
+                        self.stop_measurement(self.word_timer)
+                        ])
+        self.current_word = ""
+    
+    def pressedEnter(self):
+        self.is_running_sentence = False
+        self.is_running_word = False
+        self.sentence += self.current_word
+
+        # self.tbl(self.timestamp(), "sentence typed", self.sentence, self.stop_measurement(self.sentence_timer))
+        if self.current_word != "":
+            self.log_csv([
+                            self.timestamp(),
+                            "word typed",
+                            self.current_word,
+                            self.stop_measurement(self.word_timer)
+                        ])
+        if self.sentence != "":
+            self.log_csv([
+                            self.timestamp(),
+                            "sentence typed",
+                            self.sentence,
+                            self.stop_measurement(self.sentence_timer)
+                        ])
+        self.sentence = ""
+        self.current_word = ""
 
     def handleTimer(self):
         if not self.is_running_word:
