@@ -49,9 +49,9 @@ class SuperText(QtWidgets.QTextEdit):
 
         # Stop word measuring and add word to sentence
         if last_char == " ":
-            self.pressedSpacebar(last_char)
+            self.pressedSpacebar()
         elif last_char == "\n":
-            self.pressedEnter(last_char)
+            self.pressedEnter()
         # Add latest character to word
         else:
             self.current_word += last_char
@@ -60,7 +60,7 @@ class SuperText(QtWidgets.QTextEdit):
 
             self.log_csv([self.timestamp(), "character typed", last_char, 0])
 
-    def pressedSpacebar(self, last_char):
+    def pressedSpacebar(self):
         self.is_running_word = False
         self.sentence += self.current_word + " "
 
@@ -74,7 +74,7 @@ class SuperText(QtWidgets.QTextEdit):
                         ])
         self.current_word = ""
     
-    def pressedEnter(self, last_char):
+    def pressedEnter(self):
         self.is_running_sentence = False
         self.is_running_word = False
         self.sentence += self.current_word
