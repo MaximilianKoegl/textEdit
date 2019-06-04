@@ -6,12 +6,16 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 import re
 import csv
 import io
+import json
 
-class SuperText(QtWidgets.QTextEdit):
+class SuperText(QtWidgets.QWidget):
 
-    def __init__(self):
+    def __init__(self, user_id, method, sentences):
         super(SuperText, self).__init__()
-
+        self.user_id = user_id
+        self.method = method
+        self.sentences = [item for item in sentences]
+        self.count = 0
         self.word_timer = QtCore.QTime()
         self.sentence_timer = QtCore.QTime()
         self.is_running_word = False
@@ -19,27 +23,37 @@ class SuperText(QtWidgets.QTextEdit):
         self.sentence = ""
         self.current_word = ""
         self.prev_content = ""
-
-        self.textChanged.connect(self.changedText)
-
         self.initUI()
+        self.setTestText()
 
     def initUI(self):
         self.setGeometry(0, 0, 400, 400)
         self.setWindowTitle("SuperText")
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setMouseTracking(True)
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.sentence_box = QtWidgets.QLabel(self)
+        self.text_edit = QtWidgets.QTextEdit(self)
+        self.layout.addWidget(self.sentence_box)
+        self.layout.addWidget(self.text_edit)
+        self.setLayout(self.layout)
+        self.text_edit.textChanged.connect(self.changedText)
+
         self.show()
+    
+    def setTestText(self):
+        self.sentence_box.setText(self.sentences[self.count])
 
     def changedText(self):
         self.handleTimer()
         # Delete last char and prevent measurement from errors
-        if not len(self.prev_content) > len(self.toPlainText()):
+        if not len(self.prev_content) > len(self.text_edit.toPlainText()):
             self.handleText()
-        self.prev_content = self.toPlainText()
+        self.prev_content = self.text_edit.toPlainText()
 
     def handleText(self):
-        last_char = self.toPlainText()[-1:]
+        last_char = self.text_edit.toPlainText()[-1:]
 
         # Stop word measuring and add word to sentence
         if last_char == " ":
@@ -81,8 +95,16 @@ class SuperText(QtWidgets.QTextEdit):
                             self.sentence,
                             self.stop_measurement(self.sentence_timer)
                         ])
+
         self.sentence = ""
         self.current_word = ""
+        self.checkForNextSentence()
+    
+    def checkForNextSentence(self):
+        if self.count >= len(self.sentences)-1:
+            sys.exit()
+        self.count += 1
+        self.setTestText()
 
     def handleTimer(self):
         if not self.is_running_word:
@@ -113,8 +135,17 @@ class SuperText(QtWidgets.QTextEdit):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    super_text = SuperText()
+    super_text = SuperText(*parse_setup(sys.argv[1]))
     sys.exit(app.exec_())
+
+
+def parse_setup(filename):
+    with open(filename) as f:
+        contents = json.load(f)
+        user_id = contents['user_id']
+        method = contents['method']
+        sentences = contents['sentences']
+    return user_id, method, sentences
 
 if __name__ == '__main__':
     main()
