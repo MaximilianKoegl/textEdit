@@ -53,12 +53,12 @@ class SuperText(QtWidgets.QTextEdit):
             self.sentence += self.current_word + " "
 
             # self.tbl(self.timestamp(), "word typed", self.current_word, self.stop_measurement(self.word_timer))
-
-            self.log_csv([
-                            self.timestamp(),
-                            "word typed",
-                            self.current_word,
-                            self.stop_measurement(self.word_timer)
+            if re.search('[a-zA-Z]', self.current_word):
+                self.log_csv([
+                                self.timestamp(),
+                                "word typed",
+                                self.current_word,
+                                self.stop_measurement(self.word_timer)
                         ])
             self.current_word = ""
 
