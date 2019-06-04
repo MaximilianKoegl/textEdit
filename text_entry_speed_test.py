@@ -6,17 +6,11 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 import re
 import csv
 import io
-# from table_logger import TableLogger
-
 
 class SuperText(QtWidgets.QTextEdit):
 
     def __init__(self):
         super(SuperText, self).__init__()
-
-        # method to print logs to console in a nice formatted tabular way.
-        # easier to read, but not valid csv. disabled by default
-        # self.tbl = TableLogger(columns="timestamp,event,input,time")
 
         self.word_timer = QtCore.QTime()
         self.sentence_timer = QtCore.QTime()
@@ -55,16 +49,11 @@ class SuperText(QtWidgets.QTextEdit):
         # Add latest character to word
         else:
             self.current_word += last_char
-
-            # self.tbl(self.timestamp(), "character typed", last_char, 0)
-
             self.log_csv([self.timestamp(), "character typed", last_char, 0])
 
     def pressedSpacebar(self):
         self.is_running_word = False
         self.sentence += self.current_word + " "
-
-        # self.tbl(self.timestamp(), "word typed", self.current_word, self.stop_measurement(self.word_timer))
         if re.search('[a-zA-Z]', self.current_word):
             self.log_csv([
                         self.timestamp(),
@@ -78,8 +67,6 @@ class SuperText(QtWidgets.QTextEdit):
         self.is_running_sentence = False
         self.is_running_word = False
         self.sentence += self.current_word
-
-        # self.tbl(self.timestamp(), "sentence typed", self.sentence, self.stop_measurement(self.sentence_timer))
         if self.current_word != "":
             self.log_csv([
                             self.timestamp(),

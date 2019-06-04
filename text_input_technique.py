@@ -6,7 +6,6 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 import re
 import csv
 import io
-# from table_logger import TableLogger
 
 # TODO: inconsistencies with loggin when completing with suggestion: two separate logs when completion occurs and when space is pressed
 
