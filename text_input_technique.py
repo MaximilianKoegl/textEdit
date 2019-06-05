@@ -78,6 +78,8 @@ class SuperText(QtWidgets.QTextEdit):
 
     # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
     def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_Shift:
+            return
         tc = self.textCursor()
         if event.key() == QtCore.Qt.Key_Tab and self.completer.popup().isVisible():
 
