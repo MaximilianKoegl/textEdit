@@ -9,10 +9,11 @@ import io
 import json
 
 
-class SuperText(QtWidgets.QWidget):
+class SuperText(QtWidgets.QTextEdit):
 
-    def __init__(self, user_id, method, sentences):
+    def __init__(self, user_id, method, sentences, caller_class):
         super(SuperText, self).__init__()
+        self.caller_class = caller_class
         self.user_id = user_id
         self.method = method
         self.sentences = [item for item in sentences]
@@ -25,7 +26,6 @@ class SuperText(QtWidgets.QWidget):
         self.current_word = ""
         self.prev_content = ""
         self.initUI()
-        self.setTestText()
 
     def initUI(self):
         self.setGeometry(0, 0, 400, 400)
@@ -33,27 +33,18 @@ class SuperText(QtWidgets.QWidget):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setMouseTracking(True)
 
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.sentence_box = QtWidgets.QLabel(self)
-        self.text_edit = QtWidgets.QTextEdit(self)
-        self.layout.addWidget(self.sentence_box)
-        self.layout.addWidget(self.text_edit)
-        self.setLayout(self.layout)
-        self.text_edit.textChanged.connect(self.changedText)
+        self.textChanged.connect(self.changedText)
 
         self.show()
 
-    def setTestText(self):
-        self.sentence_box.setText(self.sentences[self.count])
-
     def changedText(self):
         self.handleTimer()
-        if not len(self.prev_content) > len(self.text_edit.toPlainText()):
+        if not len(self.prev_content) > len(self.toPlainText()):
             self.handleText()
-        self.prev_content = self.text_edit.toPlainText()
+        self.prev_content = self.toPlainText()
 
     def handleText(self):
-        last_char = self.text_edit.toPlainText()[-1:]
+        last_char = self.toPlainText()[-1:]
         if last_char == " ":
             self.pressedSpacebar()
         elif last_char == "\n":
@@ -101,7 +92,7 @@ class SuperText(QtWidgets.QWidget):
         if self.count >= len(self.sentences)-1:
             sys.exit()
         self.count += 1
-        self.setTestText()
+        self.caller_class.setSentence()
 
     def handleTimer(self):
         if not self.is_running_word:
@@ -130,10 +121,47 @@ class SuperText(QtWidgets.QWidget):
         cw.writerow(data)
         print(si.getvalue().strip("\r\n"))
 
+class TextEditProgram(QtWidgets.QWidget):
+
+    def __init__(self, user_id, method, sentences):
+        super(TextEditProgram, self).__init__()
+        self.user_id = user_id
+        self.method = method
+        self.count = 0
+        self.sentences = [item for item in sentences]
+        self.wordList = self.getWordList()
+        self.initUI()
+        self.setSentence()
+
+    def initUI(self):
+        self.setGeometry(0, 0, 400, 400)
+        self.setWindowTitle("TextEditExperiment")
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setMouseTracking(True)
+        self.layout = QtWidgets.QVBoxLayout()
+        self.sentence_box = QtWidgets.QLabel()
+        self.super_text = SuperText(self.user_id, self.method, self.sentences, self)
+        self.layout.addWidget(self.sentence_box)
+        self.layout.addWidget(self.super_text)
+        self.setLayout(self.layout)
+        self.show()
+
+    def setSentence(self):
+        if self.count > len(self.sentences)-1:
+            sys.exit()
+        self.sentence_box.setText(self.sentences[self.count])
+        self.count += 1
+
+    def getWordList(self):
+        list = []
+        for item in self.sentences:
+            placeholder = item.split()
+            list.extend([word for word in placeholder if word not in list])
+        return list
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    super_text = SuperText(*parse_setup(sys.argv[1]))
+    text_edit_program = TextEditProgram(*parse_setup(sys.argv[1]))
     sys.exit(app.exec_())
 
 
