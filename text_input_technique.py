@@ -108,7 +108,7 @@ class SuperText(QtWidgets.QTextEdit):
     def handle_text(self):
         self.handleTimer()
         last_char = self.toPlainText()[-1:]
-        self.log_csv(["character typed", self.timestamp(), last_char, 0])
+        self.log_csv(["character typed", self.timestamp(), repr(last_char).replace("'", ""), 0])
 
         # Stop word measuring and add word to sentence
         if last_char == " ":
