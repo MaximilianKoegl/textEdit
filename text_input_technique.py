@@ -76,12 +76,10 @@ class SuperText(QtWidgets.QTextEdit):
     # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
     def keyPressEvent(self, event):
         tc = self.textCursor()
-        if event.key() == QtCore.Qt.Key_Tab and
-        self.completer.popup().isVisible():
+        if event.key() == QtCore.Qt.Key_Tab and self.completer.popup().isVisible():
 
             self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.
-            setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+            self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             return
 
         QtWidgets.QTextEdit.keyPressEvent(self, event)
@@ -107,7 +105,7 @@ class SuperText(QtWidgets.QTextEdit):
     def handle_text(self):
         self.handleTimer()
         last_char = self.toPlainText()[-1:]
-        self.log_csv([self.timestamp(), "character typed", last_char, 0])
+        self.log_csv(["character typed", self.timestamp(), last_char, 0])
 
         # Stop word measuring and add word to sentence
         if last_char == " ":
@@ -129,8 +127,8 @@ class SuperText(QtWidgets.QTextEdit):
 
         if re.search('[a-zA-Z]', self.current_word):
             self.log_csv([
-                        self.timestamp(),
                         str("word "+text),
+                        self.timestamp(),
                         self.current_word,
                         self.stop_measurement(self.word_timer)
                         ])
@@ -143,15 +141,15 @@ class SuperText(QtWidgets.QTextEdit):
 
         if self.current_word != "":
             self.log_csv([
-                            self.timestamp(),
                             "word typed",
+                            self.timestamp(),
                             self.current_word,
                             self.stop_measurement(self.word_timer)
                         ])
         if self.sentence != "":
             self.log_csv([
-                            self.timestamp(),
                             "sentence typed",
+                            self.timestamp(),
                             self.sentence,
                             self.stop_measurement(self.sentence_timer)
                         ])
