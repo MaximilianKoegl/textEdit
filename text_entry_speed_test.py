@@ -60,15 +60,15 @@ class SuperText(QtWidgets.QWidget):
             self.pressedEnter()
         else:
             self.current_word += last_char
-            self.log_csv([self.timestamp(), "character typed", last_char, 0])
+            self.log_csv(["character typed", self.timestamp(), last_char, 0])
 
     def pressedSpacebar(self):
         self.is_running_word = False
         self.sentence += self.current_word + " "
         if re.search('[a-zA-Z]', self.current_word):
             self.log_csv([
-                        self.timestamp(),
                         "word typed",
+                        self.timestamp(),
                         self.current_word,
                         self.stop_measurement(self.word_timer)
                         ])
@@ -80,15 +80,15 @@ class SuperText(QtWidgets.QWidget):
         self.sentence += self.current_word
         if self.current_word != "":
             self.log_csv([
-                            self.timestamp(),
                             "word typed",
+                            self.timestamp(),
                             self.current_word,
                             self.stop_measurement(self.word_timer)
                         ])
         if self.sentence != "":
             self.log_csv([
-                            self.timestamp(),
                             "sentence typed",
+                            self.timestamp(),
                             self.sentence,
                             self.stop_measurement(self.sentence_timer)
                         ])
