@@ -6,6 +6,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 import re
 import csv
 import io
+import json
 
 
 # https://doc.qt.io/qtforpython/PySide2/QtWidgets/QCompleter.html?highlight=qcompleter
@@ -28,9 +29,14 @@ class TextInputTechnique(QtWidgets.QCompleter):
 
 class SuperText(QtWidgets.QTextEdit):
 
-    def __init__(self, setSentence, wordList, parent=None):
+    def __init__(self, user_id, method, word_list, sentences, caller_class, parent=None):
         super(SuperText, self).__init__(parent)
-        self.setSentence = setSentence
+        self.caller_class = caller_class
+        self.user_id = user_id
+        self.method = method
+        self.word_list = word_list
+        self.sentences = [item for item in sentences]
+        self.count = 0
         self.word_timer = QtCore.QTime()
         self.sentence_timer = QtCore.QTime()
         self.is_running_word = False
@@ -39,14 +45,11 @@ class SuperText(QtWidgets.QTextEdit):
         self.current_word = ""
         self.prev_content = ""
 
-        self.wordlist = wordList
-
         # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
-        self.completer = TextInputTechnique(self.wordlist)
+        self.completer = TextInputTechnique(self.word_list)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
         self.initUI()
-        self.setSentence()
 
     def initUI(self):
         self.setGeometry(0, 0, 400, 400)
@@ -153,10 +156,16 @@ class SuperText(QtWidgets.QTextEdit):
                             self.sentence,
                             self.stop_measurement(self.sentence_timer)
                         ])
-            self.setSentence()
 
         self.sentence = ""
         self.current_word = ""
+        self.checkForNextSentence()
+
+    def checkForNextSentence(self):
+        if self.count >= len(self.sentences)-1:
+            sys.exit()
+        self.count += 1
+        self.caller_class.setSentence()
 
     def handleTimer(self):
         if not self.is_running_word:
@@ -181,14 +190,60 @@ class SuperText(QtWidgets.QTextEdit):
     def log_csv(self, data):
         si = io.StringIO()
         cw = csv.writer(si)
+        data.extend([self.method, self.user_id])
         cw.writerow(data)
         print(si.getvalue().strip("\r\n"))
 
+class TextEditProgram(QtWidgets.QWidget):
+
+    def __init__(self, user_id, method, sentences):
+        super(TextEditProgram, self).__init__()
+        self.user_id = user_id
+        self.method = method
+        self.count = 0
+        self.sentences = [item for item in sentences]
+        self.word_list = self.getWordList()
+        self.initUI()
+        self.setSentence()
+
+    def initUI(self):
+        self.setGeometry(0, 0, 400, 400)
+        self.setWindowTitle("TextEditExperiment")
+        self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.setMouseTracking(True)
+        self.layout = QtWidgets.QVBoxLayout()
+        self.sentence_box = QtWidgets.QLabel()
+        self.super_text = SuperText(self.user_id, self.method, self.word_list, self.sentences, self)
+        self.layout.addWidget(self.sentence_box)
+        self.layout.addWidget(self.super_text)
+        self.setLayout(self.layout)
+        self.show()
+
+    def setSentence(self):
+        if self.count > len(self.sentences)-1:
+            sys.exit()
+        self.sentence_box.setText(self.sentences[self.count])
+        self.count += 1
+
+    def getWordList(self):
+        list = []
+        for item in self.sentences:
+            placeholder = item.split()
+            list.extend([word for word in placeholder if word not in list])
+        return list
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    super_text = SuperText()
+    text_edit_program = TextEditProgram(*parse_setup(sys.argv[1]))
     sys.exit(app.exec_())
+
+def parse_setup(filename):
+    with open(filename) as f:
+        contents = json.load(f)
+        user_id = contents['user_id']
+        method = contents['method']
+        sentences = contents['sentences']
+    return user_id, method, sentences
 
 if __name__ == '__main__':
     main()
