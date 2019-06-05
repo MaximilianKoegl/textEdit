@@ -8,6 +8,7 @@ import csv
 import io
 import json
 
+
 class SuperText(QtWidgets.QWidget):
 
     def __init__(self, user_id, method, sentences):

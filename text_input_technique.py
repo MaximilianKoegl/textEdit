@@ -29,9 +29,9 @@ class TextInputTechnique(QtWidgets.QCompleter):
 
 class SuperText(QtWidgets.QTextEdit):
  
-    def __init__(self, parent=None):
+    def __init__(self, setSentence, wordList, parent=None):
         super(SuperText, self).__init__(parent)
-
+        self.setSentence = setSentence
         self.word_timer = QtCore.QTime()
         self.sentence_timer = QtCore.QTime()
         self.is_running_word = False
@@ -40,15 +40,16 @@ class SuperText(QtWidgets.QTextEdit):
         self.current_word = ""
         self.prev_content = ""
 
-        self.wordlist = ["ball", "happy", "boat", "sweet", "halleluja", "funny", "football"]
+        self.wordlist = wordList
 
         # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
         self.completer = TextInputTechnique(self.wordlist)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
         self.initUI()
+        self.setSentence()
         
-    def initUI(self):      
+    def initUI(self):
         self.setGeometry(0, 0, 400, 400)
         self.setWindowTitle("SuperText")
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -151,8 +152,11 @@ class SuperText(QtWidgets.QTextEdit):
                             self.sentence,
                             self.stop_measurement(self.sentence_timer)
                         ])
+            self.setSentence()
+
         self.sentence = ""
         self.current_word = ""
+
 
     def handleTimer(self):
         if not self.is_running_word:
