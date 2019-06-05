@@ -7,7 +7,6 @@ import re
 import csv
 import io
 
-# TODO: inconsistencies with loggin when completing with suggestion: two separate logs when completion occurs and when space is pressed
 
 # https://doc.qt.io/qtforpython/PySide2/QtWidgets/QCompleter.html?highlight=qcompleter
 # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
@@ -28,10 +27,10 @@ class TextInputTechnique(QtWidgets.QCompleter):
 
 
 class SuperText(QtWidgets.QTextEdit):
- 
-    def __init__(self, parent=None):
-        super(SuperText, self).__init__(parent)
 
+    def __init__(self, setSentence, wordList, parent=None):
+        super(SuperText, self).__init__(parent)
+        self.setSentence = setSentence
         self.word_timer = QtCore.QTime()
         self.sentence_timer = QtCore.QTime()
         self.is_running_word = False
@@ -40,15 +39,16 @@ class SuperText(QtWidgets.QTextEdit):
         self.current_word = ""
         self.prev_content = ""
 
-        self.wordlist = ["ball", "happy", "boat", "sweet", "halleluja", "funny", "football"]
+        self.wordlist = wordList
 
         # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
         self.completer = TextInputTechnique(self.wordlist)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
         self.initUI()
-        
-    def initUI(self):      
+        self.setSentence()
+
+    def initUI(self):
         self.setGeometry(0, 0, 400, 400)
         self.setWindowTitle("SuperText")
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -76,9 +76,12 @@ class SuperText(QtWidgets.QTextEdit):
     # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
     def keyPressEvent(self, event):
         tc = self.textCursor()
-        if event.key() == QtCore.Qt.Key_Tab and self.completer.popup().isVisible():
+        if event.key() == QtCore.Qt.Key_Tab and
+        self.completer.popup().isVisible():
+
             self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+            self.completer.
+            setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             return
 
         QtWidgets.QTextEdit.keyPressEvent(self, event)
@@ -88,18 +91,19 @@ class SuperText(QtWidgets.QTextEdit):
         if len(tc.selectedText()) > 0:
             self.completer.setCompletionPrefix(tc.selectedText())
             popup = self.completer.popup()
-            popup.setCurrentIndex(self.completer.completionModel().index(0,0))
+            popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
 
-            cr.setWidth(self.completer.popup().sizeHintForColumn(0) 
-            + self.completer.popup().verticalScrollBar().sizeHint().width())
+            cr.setWidth(self.completer.popup().sizeHintForColumn(0) +
+                        self.completer.popup().
+                        verticalScrollBar().sizeHint().width())
             self.completer.complete(cr)
 
         else:
             self.completer.popup().hide()
-        
+
         if not event.key() == QtCore.Qt.Key_Tab:
             self.handle_text()
-        
+
     def handle_text(self):
         self.handleTimer()
         last_char = self.toPlainText()[-1:]
@@ -131,7 +135,7 @@ class SuperText(QtWidgets.QTextEdit):
                         self.stop_measurement(self.word_timer)
                         ])
             self.current_word = ""
-    
+
     def pressedEnter(self):
         self.is_running_sentence = False
         self.is_running_word = False
@@ -151,6 +155,8 @@ class SuperText(QtWidgets.QTextEdit):
                             self.sentence,
                             self.stop_measurement(self.sentence_timer)
                         ])
+            self.setSentence()
+
         self.sentence = ""
         self.current_word = ""
 
@@ -172,7 +178,7 @@ class SuperText(QtWidgets.QTextEdit):
     def timestamp(self):
         return QtCore.QDateTime.currentDateTime().toString(QtCore.Qt.ISODate)
 
-    # convert log-data from list to csv-string and output it to stdout 
+    # convert log-data from list to csv-string and output it to stdout
     # https://stackoverflow.com/questions/9157314/how-do-i-write-data-into-csv-format-as-string-not-file
     def log_csv(self, data):
         si = io.StringIO()

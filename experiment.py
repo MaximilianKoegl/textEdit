@@ -4,8 +4,8 @@
 import sys
 from PyQt5 import QtGui, QtCore, QtWidgets
 import json
-from text_entry_speed_test import SuperText
-# from text_input_technique import SuperText
+# from text_entry_speed_test import SuperText
+from text_input_technique import SuperText
 
 
 class TextEditExperiment(QtWidgets.QWidget):
@@ -14,7 +14,9 @@ class TextEditExperiment(QtWidgets.QWidget):
         super(TextEditExperiment, self).__init__()
         self.user_id = user_id
         self.method = method
-        self.sentences = sentences
+        self.count = 0
+        self.sentences = [item for item in sentences]
+        self.wordList = self.getWordList()
         self.initUI()
 
     def initUI(self):
@@ -23,11 +25,25 @@ class TextEditExperiment(QtWidgets.QWidget):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setMouseTracking(True)
         self.layout = QtWidgets.QVBoxLayout()
-        self.layout.addWidget(QtWidgets.QLabel())
-        self.layout.addWidget(SuperText())
+        self.sentence_box = QtWidgets.QLabel()
+        self.super_text = SuperText(self.setSentence, self.wordList)
+        self.layout.addWidget(self.sentence_box)
+        self.layout.addWidget(self.super_text)
         self.setLayout(self.layout)
         self.show()
-        print(self.sentences)
+
+    def setSentence(self):
+        if self.count > len(self.sentences)-1:
+            sys.exit()
+        self.sentence_box.setText(self.sentences[self.count])
+        self.count += 1
+
+    def getWordList(self):
+        list = []
+        for item in self.sentences:
+            placeholder = item.split()
+            list.extend([word for word in placeholder if word not in list])
+        return list
 
 
 def main():
