@@ -42,26 +42,22 @@ class SuperText(QtWidgets.QWidget):
         self.text_edit.textChanged.connect(self.changedText)
 
         self.show()
-    
+
     def setTestText(self):
         self.sentence_box.setText(self.sentences[self.count])
 
     def changedText(self):
         self.handleTimer()
-        # Delete last char and prevent measurement from errors
         if not len(self.prev_content) > len(self.text_edit.toPlainText()):
             self.handleText()
         self.prev_content = self.text_edit.toPlainText()
 
     def handleText(self):
         last_char = self.text_edit.toPlainText()[-1:]
-
-        # Stop word measuring and add word to sentence
         if last_char == " ":
             self.pressedSpacebar()
         elif last_char == "\n":
             self.pressedEnter()
-        # Add latest character to word
         else:
             self.current_word += last_char
             self.log_csv([self.timestamp(), "character typed", last_char, 0])
@@ -77,7 +73,7 @@ class SuperText(QtWidgets.QWidget):
                         self.stop_measurement(self.word_timer)
                         ])
         self.current_word = ""
-    
+
     def pressedEnter(self):
         self.is_running_sentence = False
         self.is_running_word = False
@@ -100,7 +96,7 @@ class SuperText(QtWidgets.QWidget):
         self.sentence = ""
         self.current_word = ""
         self.checkForNextSentence()
-    
+
     def checkForNextSentence(self):
         if self.count >= len(self.sentences)-1:
             sys.exit()

@@ -4,7 +4,7 @@
 import sys
 from PyQt5 import QtGui, QtCore, QtWidgets
 import json
-#from text_entry_speed_test import SuperText
+# from text_entry_speed_test import SuperText
 from text_input_technique import SuperText
 
 
@@ -37,16 +37,13 @@ class TextEditExperiment(QtWidgets.QWidget):
             sys.exit()
         self.sentence_box.setText(self.sentences[self.count])
         self.count += 1
-    
+
     def getWordList(self):
         list = []
         for item in self.sentences:
             placeholder = item.split()
             list.extend([word for word in placeholder if word not in list])
         return list
-        
-
-
 
 
 def main():
