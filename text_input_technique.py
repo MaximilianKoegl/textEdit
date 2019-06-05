@@ -28,9 +28,9 @@ class TextInputTechnique(QtWidgets.QCompleter):
 
 class SuperText(QtWidgets.QTextEdit):
 
-    def __init__(self, setSentence, wordList, parent=None):
+    def __init__(self, data, parent=None):
         super(SuperText, self).__init__(parent)
-        self.setSentence = setSentence
+        self.setSentence = data[0]
         self.word_timer = QtCore.QTime()
         self.sentence_timer = QtCore.QTime()
         self.is_running_word = False
@@ -38,8 +38,9 @@ class SuperText(QtWidgets.QTextEdit):
         self.sentence = ""
         self.current_word = ""
         self.prev_content = ""
-
-        self.wordlist = wordList
+        self.wordlist = data[1]
+        self.user_id = data[2]
+        self.method = data[3]
 
         # https://stackoverflow.com/questions/28956693/pyqt5-qtextedit-auto-completion
         self.completer = TextInputTechnique(self.wordlist)
@@ -105,7 +106,7 @@ class SuperText(QtWidgets.QTextEdit):
     def handle_text(self):
         self.handleTimer()
         last_char = self.toPlainText()[-1:]
-        self.log_csv(["character typed", self.timestamp(), last_char, 0])
+        self.log_csv(["character typed", self.timestamp(), repr(last_char).replace("'", ""), 0])
 
         # Stop word measuring and add word to sentence
         if last_char == " ":
@@ -181,6 +182,7 @@ class SuperText(QtWidgets.QTextEdit):
     def log_csv(self, data):
         si = io.StringIO()
         cw = csv.writer(si)
+        data.extend([self.method, self.user_id])
         cw.writerow(data)
         print(si.getvalue().strip("\r\n"))
 

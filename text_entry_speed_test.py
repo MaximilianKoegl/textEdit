@@ -126,6 +126,7 @@ class SuperText(QtWidgets.QWidget):
     def log_csv(self, data):
         si = io.StringIO()
         cw = csv.writer(si)
+        data.extend([self.method, self.user_id])
         cw.writerow(data)
         print(si.getvalue().strip("\r\n"))
 

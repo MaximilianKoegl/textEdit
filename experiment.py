@@ -26,7 +26,7 @@ class TextEditExperiment(QtWidgets.QWidget):
         self.setMouseTracking(True)
         self.layout = QtWidgets.QVBoxLayout()
         self.sentence_box = QtWidgets.QLabel()
-        self.super_text = SuperText(self.setSentence, self.wordList)
+        self.super_text = SuperText([self.setSentence, self.wordList, self.user_id, self.method])
         self.layout.addWidget(self.sentence_box)
         self.layout.addWidget(self.super_text)
         self.setLayout(self.layout)
